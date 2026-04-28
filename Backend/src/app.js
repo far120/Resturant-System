@@ -68,8 +68,13 @@ app.use((req,res,next)=>{
 app.use(require('./middlewares/error-handler.middleware'));
 
 
-// listen to server
-const port = process.env.PORT || 3002;
-app.listen(port, () => {
-    logger.info(`Server is running on http://localhost:${port}`);
-});
+// Export app for Vercel serverless
+module.exports = app;
+
+// listen to server (for local development)
+if (require.main === module) {
+    const port = process.env.PORT || 3002;
+    app.listen(port, () => {
+        logger.info(`Server is running on http://localhost:${port}`);
+    });
+}

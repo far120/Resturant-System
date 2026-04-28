@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "buildCommand": "cd Backend && npm install && cd ../Frontend && npm install && npm run build",
+  "outputDirectory": "Frontend/dist",
+  "framework": "vite",
+  "regions": ["iad"],
+  "env": {
+    "VITE_API_URL": "@vite_api_url",
+    "MONGO_URI": "@mongo_uri",
+    "JWT_SECRET": "@jwt_secret",
+    "JWT_EXPIRE": "@jwt_expire",
+    "COOKIE_EXPIRE": "@cookie_expire",
+    "NODE_ENV": "production",
+    "FRONTEND_URL": "@frontend_url"
+  },
+  "functions": {
+    "Backend/api.js": {
+      "runtime": "nodejs20.x",
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
