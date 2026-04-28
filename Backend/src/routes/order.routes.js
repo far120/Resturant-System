@@ -7,7 +7,6 @@ const {createOrder , getOrders, updateOrder} = require("../controllers/order.Con
 const asynchandler = require('express-async-handler');
 const authorize = require('../middlewares/authorize.middleware');
 const authandicate = require('../middlewares/authenticate.middleware');
-const paginate = require('../middlewares/paginate.middleware');
 const upload = require('../middlewares/uploadMiddleware');
 
 /**
@@ -24,7 +23,7 @@ router.post('/' , authandicate , createOrder  )
  * @method  GET
  * @access  Private
  */
-router.get('/' , authandicate , paginate(Order) , getOrders  )
+router.get('/' ,authandicate  , getOrders  )
 
 
 /**

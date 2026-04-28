@@ -8,7 +8,6 @@ const {createReview , getReviews , updateReview , deleteReview} = require("../co
 const asynchandler = require('express-async-handler');
 const authorize = require('../middlewares/authorize.middleware');
 const authandicate = require('../middlewares/authenticate.middleware');
-const paginate = require('../middlewares/paginate.middleware');
 const upload = require('../middlewares/uploadMiddleware');
 const {createReviewSchema , updateReviewSchema} = require('../validators/ReviewValidator');
 const validate = require('../middlewares/validate');
@@ -27,7 +26,7 @@ router.post('/' ,authandicate , createReview )
  * @method  GET
  * @access  Public
  */
-router.get('/' , paginate(Review) , getReviews )
+router.get('/'  , getReviews )
 
 /** * @desc    putch review by id
  * @route   PUT /api/reviews/:id

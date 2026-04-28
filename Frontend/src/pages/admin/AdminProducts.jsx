@@ -108,10 +108,18 @@ export default function AdminProductsPage() {
       description: product.description || "",
       price: product.price || "",
       stock: product.stock || "",
-      category: product.category || "",
+      category: typeof product.category === "object" ? product.category?._id || "" : product.category || "",
       available: product.available ? "true" : "false",
     });
     setImageFile(null);
+  }
+
+  function getCategoryName(product) {
+    if (product.category && typeof product.category === "object") {
+      return product.category.name || "Uncategorized";
+    }
+
+    return categoryMap.get(product.category) || "Uncategorized";
   }
 
   function resetForm() {
@@ -334,7 +342,7 @@ export default function AdminProductsPage() {
                     <p className="font-bold text-[#92400e]">{product.name}</p>
                     <p className="text-sm text-[#a16207]">{product.description || "No description"}</p>
                     <p className="text-xs text-[#78716c]">
-                      Category: {categoryMap.get(product.category) || product.category}
+                      Category: {getCategoryName(product)}
                     </p>
                     <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#b45309]">
                       {product.available ? "Available" : "Not available"} • Stock {product.stock ?? 0}

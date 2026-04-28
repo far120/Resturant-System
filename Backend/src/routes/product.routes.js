@@ -6,7 +6,6 @@ const User = require('../models/User');
 const {createProduct , getAllProducts , getProductById , updateProduct , deleteProduct} = require("../controllers/product.Controller");
 const authorize = require('../middlewares/authorize.middleware');
 const authandicate = require('../middlewares/authenticate.middleware');
-const paginate = require('../middlewares/paginate.middleware');
 const upload = require('../middlewares/uploadMiddleware');
 const {createProductSchema , updateProductSchema} = require('../validators/ProductValidator');
 const validate = require('../middlewares/validate');
@@ -26,7 +25,7 @@ router.post('/' , authandicate , authorize('admin') , upload.single('image') , v
  * @method  GET
  * @access  Public
  */
-router.get('/' , paginate(Product) , getAllProducts)
+router.get('/' , getAllProducts)
 
 /**
  * @desc   get product by id
@@ -34,7 +33,7 @@ router.get('/' , paginate(Product) , getAllProducts)
  * @method  GET
  * @access  Public
  */
-router.get('/:id' , paginate(Product) , getProductById)
+router.get('/:id' , getProductById)
 
 /**
  * @desc   update product by id

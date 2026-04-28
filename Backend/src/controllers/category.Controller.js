@@ -1,7 +1,7 @@
 const Category = require('../models/category');
 const logger = require('../utils/Logger');
 const asynchandler = require('express-async-handler');
-const paginate = require('../middlewares/paginate.middleware');
+const APIFeatures = require('../utils/APIFeatures');
 
 /**
  * @desc    add a new category
@@ -30,6 +30,11 @@ exports.addCategory = asynchandler(async (req, res) => {
  */
 exports.getCategories = asynchandler(async (req, res) => {
     logger.info("Fetching categories with pagination");
-    res.status(200).json(res.paginatedResult);
-   
+    const result = await new APIFeatures(Category.find(), req.query)
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate()
+        .execute();
+    res.status(200).json(result);
 });

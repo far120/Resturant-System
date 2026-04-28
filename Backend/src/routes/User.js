@@ -5,7 +5,6 @@ const validate = require('../middlewares/validate');
 const { ValidateCreateUserSchema, ValidateUpdateMeSchema, ValidateUserlogin, ValidateResetPassword } = require('../validators/userValidator');
 const authorize = require('../middlewares/authorize.middleware');
 const authandicate = require('../middlewares/authenticate.middleware');
-const paginate = require('../middlewares/paginate.middleware');
 const upload = require('../middlewares/uploadMiddleware');
 const User = require('../models/User');
 
@@ -42,7 +41,7 @@ router.post("/logout", authorize(['admin']), userController.LogoutUser);
  * @method  GET
  * @access  private (admin)
  */
-router.get("/", authorize(['admin']), paginate(User), userController.GetUsers);
+router.get("/", authorize(['admin']), userController.GetUsers);
 
 /**
  * @desc    get me

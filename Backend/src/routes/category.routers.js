@@ -5,7 +5,6 @@ const {addCategory , getCategories} = require("../controllers/category.Controlle
 const asynchandler = require('express-async-handler');
 const authorize = require('../middlewares/authorize.middleware');
 const authandicate = require('../middlewares/authenticate.middleware');
-const paginate = require('../middlewares/paginate.middleware');
 const upload = require('../middlewares/uploadMiddleware');
 
 /**
@@ -21,9 +20,9 @@ router.post('/' , authorize(['admin']), addCategory )
  * @desc    get all categories
  * @route   GET /api/categories
  * @method  GET
- * @access  Private (admin only)
+ * @access  Public
  */
-router.get('/' , authandicate, paginate(Category), getCategories) 
+router.get('/' , getCategories) 
 
 
 

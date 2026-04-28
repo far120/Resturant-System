@@ -84,7 +84,7 @@ if (req.user && req.user.role !== "admin") {
         // ======================
         // 📌 Populate (Dynamic + Safe)
         // ======================
-        const allowedPopulate = ['user', 'role', 'items'];
+        const allowedPopulate = ['user', 'role', 'items', 'items.product', 'category'];
 
         let populateFields = [];
 

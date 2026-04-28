@@ -2,7 +2,8 @@ const Proudct = require('../models/product');
 const Category = require('../models/category');
 const logger = require('../utils/Logger');
 const asynchandler = require('express-async-handler');
-const paginate = require('../middlewares/paginate.middleware');
+const ApiFeatures = require('../utils/APIFeatures');
+
 
 
 /**
@@ -32,7 +33,15 @@ exports.createProduct = asynchandler(async (req,res)=>{
  * @access  Public
  */
 exports.getAllProducts = asynchandler(async (req,res)=>{
-    res.status(200).json(res.paginatedResult);
+    // res.status(200).json(res.paginatedResult);
+    const result = await new ApiFeatures(Proudct.find(), req.query)
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate()
+        .populate('category')
+        .execute();
+    res.status(200).json(result);
 })
 
 /**
@@ -43,7 +52,7 @@ exports.getAllProducts = asynchandler(async (req,res)=>{
  */
 exports.getProductById = asynchandler(async (req,res)=>{
     const productid = req.params.id;
-    const product = await Proudct.findById(productid);
+    const product = await Proudct.findById(productid).populate('category');
     if(!product){
         res.status(404).json({message:"Product not found"});
     }

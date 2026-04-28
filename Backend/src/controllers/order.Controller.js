@@ -3,24 +3,24 @@ const Product = require('../models/product');
 const User = require('../models/User');
 const logger = require('../utils/Logger');
 const asynchandler = require('express-async-handler');
-const paginate = require('../middlewares/paginate.middleware')
 const authandicate = require('../middlewares/authenticate.middleware');
 const authorize = require('../middlewares/authorize.middleware');
+const APIFeatures = require('../utils/APIFeatures');
 
-const orderPopulateOptions = [
-  {
-    path: 'user',
-    select: 'username email image role'
-  },
-  {
-    path: 'items.product',
-    select: 'name price image available category'
-  }
-];
+// const orderPopulateOptions = [
+//   {
+//     path: 'user',
+//     select: 'username email image role'
+//   },
+//   {
+//     path: 'items.product',
+//     select: 'name price image available category'
+//   }
+// ];
 
-async function populateOrder(order) {
-  return order.populate(orderPopulateOptions);
-}
+// async function populateOrder(order) {
+//   return order.populate(orderPopulateOptions);
+// }
 
 /**
  * @desc   create a new order
@@ -94,12 +94,9 @@ exports.createOrder = asynchandler(async (req, res) => {
     totalAmount
   });
 
-  const populatedOrder = await populateOrder(order);
+  // const populatedOrder = await populateOrder(order);
 
-  res.status(201).json({
-    message: "Order created successfully",
-    order: populatedOrder
-  });
+  res.status(201).json({ message: "Order created successfully",});
 });
 
 /**
@@ -108,9 +105,64 @@ exports.createOrder = asynchandler(async (req, res) => {
  * @method  GET
  * @access  Private
  */
-exports.getOrders = asynchandler(async (req, res) => {
-    res.status(200).json(res.paginatedResult);
-});
+// exports.getOrders = asynchandler(async (req, res) => {
+  
+
+//     const result = await new APIFeatures(Order.find(), req.query)
+//         .filter()
+//         .sort()
+//         .limitFields()
+//         .paginate()
+//         .populate('user')
+//         .populate('items.product')
+//         .execute();
+//     res.status(200).json(result);
+// });
+
+exports.getOrders = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, status } = req.query;
+
+    const query = {};
+
+    // =========================
+    // 🔐 ROLE BASED ACCESS
+    // =========================
+    if (req.user.role !== "admin") {
+      query.user = req.user._id;
+    }
+
+    // optional filter
+    if (status && status !== "all") {
+      query.status = status;
+    }
+
+    const skip = (page - 1) * limit;
+
+    const orders = await Order.find(query)
+      .populate("user")
+      .populate("items.product")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(Number(limit));
+
+    const totalResults = await Order.countDocuments(query);
+
+    res.json({
+      status: "success",
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(totalResults / limit),
+      totalResults,
+      result: orders,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
 
 
 
@@ -148,12 +200,9 @@ exports.updateOrder = asynchandler(async (req, res) => {
         order.status = "cancelled";
         await order.save();
 
-        const populatedOrder = await populateOrder(order);
+        // const populatedOrder = await populateOrder(order);
 
-        return res.json({
-            message: "Order cancelled successfully",
-          order: populatedOrder
-        });
+        return res.json({ message: "Order cancelled successfully"});
     }
 
     // =========================
@@ -172,11 +221,10 @@ exports.updateOrder = asynchandler(async (req, res) => {
     order.status = status;
     await order.save();
 
-    const populatedOrder = await populateOrder(order);
+    // const populatedOrder = await populateOrder(order);
 
     res.json({
-        message: "Order status updated successfully",
-      order: populatedOrder
+        message: "Order status updated successfully"
     });
 });
 

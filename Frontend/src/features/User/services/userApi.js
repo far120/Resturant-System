@@ -56,10 +56,60 @@ export async function resetMyPassword(payload) {
 export async function getUsers(params = {}) {
     try {
         const response = await api.get(GET_USERS, { params });
-        return response.data;
+        return normalizePaginatedResponse(response.data);
     } catch (error) {
         throw normalizeError(error, "Failed to fetch users");
     }
+}
+
+function normalizePaginatedResponse(data) {
+  if (!data) {
+    return {
+      page: 1,
+      totalPages: 1,
+      totalResults: 0,
+      result: [],
+    };
+  }
+
+  // Handle Backend response format: { data: [...], page, limit, totalPages, totalResults }
+  if (Array.isArray(data.data)) {
+    return {
+      page: data.page || 1,
+      limit: data.limit || 10,
+      totalPages: data.totalPages || 1,
+      totalResults: data.totalResults || 0,
+      result: data.data,
+    };
+  }
+
+  if (Array.isArray(data.result)) {
+    return data;
+  }
+
+  if (Array.isArray(data.results)) {
+    return {
+      ...data,
+      result: data.results,
+    };
+  }
+
+  // Handle array responses
+  if (Array.isArray(data)) {
+    return {
+      page: 1,
+      totalPages: 1,
+      totalResults: data.length,
+      result: data,
+    };
+  }
+
+  return {
+    page: data.page || 1,
+    totalPages: data.totalPages || 1,
+    totalResults: data.totalResults || 0,
+    result: [],
+  };
 }
 
 export async function deleteUser(userId) {
@@ -92,7 +142,7 @@ export async function activateUser(userId) {
 export async function getUserLogs(params) {
     try {
         const response = await api.get(GET_USER_LOGS, { params });
-        return response.data;
+        return normalizePaginatedResponse(response.data);
     } catch (error) {
         throw normalizeError(error, "Failed to fetch user logs");
     }
